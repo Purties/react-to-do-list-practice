@@ -19,99 +19,73 @@ class App extends Component {
         allChecked: false
     }
 
-    componentDidMount() {
-        this.checkNum();
-    }
-
     render() {
-        const { todos, num, allChecked } = this.state;
+        const { todos, allChecked } = this.state;
+        console.log(this.state);
         return (
             <div className="todo-container">
                 <div className="todo-wrap">
                     <Header todos={todos} addEle={this.addEle} />
                     <List todos={todos} changeDone={this.changeDone} deleteEle={this.deleteEle} />
-                    <Footer todos={todos} allChecked={allChecked} num={num} clearAll={this.clearAll} checkAll={this.checkAll} removeAllChecked={this.removeAllChecked} />
+                    <Footer todos={todos} allChecked={allChecked} changeAll={this.changeAll} removeAllChecked={this.removeAllChecked} />
                 </div>
             </div>
         )
     }
 
-    checkNum = () => {
-        const { todos } = this.state;
-        let num = 0;
-        todos.forEach(item => {
-            if (item.done === true) {
-                num++;
-            }
-        })
-        if (num === todos.length && num !== 0) {
-            return this.setState({
-                allChecked: true,
-                num: num
-            })
-        }
-        return this.setState({
-            allChecked: false,
-            num: num
-        })
-    }
 
     // 修改App的状态
     changeDone = (id, done) => {
         const { todos } = this.state;
-        todos.forEach(item => {
+        const newTodos = [...todos];
+
+        newTodos.forEach(item => {
             if (item.id === id) {
                 item.done = !done;
             }
         })
-        this.setState({ todos: todos });
-        this.checkNum();
+        this.setState({ todos: newTodos });
     }
 
     deleteEle = (id) => {
         const { todos } = this.state;
-        todos.forEach((item, index) => {
+        // console.log('删除前', todos);
+        // console.log('id是', id);
+        /* newTodos.forEach((item, index) => {
             if (item.id === id) {
-                // console.log('我是delete函数内的todos', todos);
-                // console.log('正在删除', index, '号');
-                todos.splice(index, 1);
-                // console.log('我是delete函数内删除后的todos', todos);
+                newTodos.splice(index, 1);
             }
-        });
-        this.setState({ todos: todos });
-        this.checkNum();
+        }); */
+        // 判断当前item.id和被删除的不一样，return true 放入新的数组中
+        const newTodos = todos.filter(item => {
+            return item.id !== id
+        })
+        // console.log('删除后', newTodos);
+        this.setState({ todos: newTodos });
     }
 
     addEle = (ipt) => {
         const { todos } = this.state;
-        todos.unshift({ id: Date.now(), content: ipt, done: false });
-        this.setState({ todos: todos, allChecked: false });
-
+        const newTodos = [...todos];
+        newTodos.unshift({ id: Date.now(), content: ipt, done: false });
+        this.setState({ todos: newTodos, allChecked: false });
     }
 
-    clearAll = () => {
+    changeAll = (flag) => {
+        console.log('flag', flag);
         const { todos } = this.state;
-        todos.forEach(item => {
-            item.done = false;
-        });
-        this.setState({ todos: todos });
-        this.checkNum();
-    }
-
-    checkAll = () => {
-        const { todos } = this.state;
-        todos.forEach(item => {
-            item.done = true;
-        });
-        this.setState({ todos: todos });
-        this.checkNum();
+        const newTodos = todos.map(item => {
+            return { ...item, done: flag };
+        })
+        this.setState({ todos: newTodos })
     }
 
     removeAllChecked = () => {
         const { todos } = this.state;
         if (todos.length === 0) return;
-        this.deleteEle(todos[0].id);
-        this.removeAllChecked();
+        console.log('删除全部');
+        const newTodos = todos.filter(item => !item.done);
+        this.setState({ todos: newTodos });
     }
 }
 

@@ -6,27 +6,30 @@ export default class Footer extends Component {
     }
 
     render() {
-        const { todos, num, removeAllChecked } = this.props;
+        const { todos } = this.props;
+        let num = todos.reduce((p, c) => c.done ? p + 1 : p, 0);
         return (
-            <div className="todo-footer">
+            <div className="todo-footer" >
                 <label>
-                    <input type="checkbox" checked={this.props.allChecked} onChange={this.check} num={num} />
+                    <input type="checkbox" checked={num === todos.length && num !== 0} onChange={this.check} />
                 </label>
                 <span>
                     <span>已完成{num}</span> / 全部{todos.length}
                 </span>
-                <button className="btn btn-danger" onClick={removeAllChecked} >清除已完成任务</button>
+                <button className="btn btn-danger" onClick={this.deleteAll} >清除已完成任务</button>
             </div>
         )
     }
 
-    check = () => {
-        const { allChecked, clearAll, checkAll } = this.props
-        if (allChecked) {
-            clearAll();
-        } else {
-            checkAll();
-        }
+    check = (e) => {
+        const { changeAll } = this.props
+        // console.log('触发了check');
+        changeAll(e.target.checked);
+    }
+
+    deleteAll = () => {
+        const { removeAllChecked } = this.props;
+        removeAllChecked();
     }
 
 
