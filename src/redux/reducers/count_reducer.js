@@ -12,8 +12,7 @@ function countReducer(preState = initState, action) {
     switch (type) {
         // 如果是加
         case 'increment':
-            return preState + data
-            console.log('111');
+            return preState + +data
             break;
         // 如果是减
         case 'decrement':
